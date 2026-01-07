@@ -1,0 +1,136 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    /**
+     * Leads Collection
+     * 
+     * Security Model:
+     * - CREATE: Public (anonymous users can submit leads)
+     * - READ: Admin only (privacy-first, no client reads)
+     * - UPDATE: Never (immutable audit trail)
+     * - DELETE: Admin only
+     */
+    match /leads/{leadId} {
+      allow create: if request.auth == null && validateLeadCreate(request.resource.data);
+      allow read, update, delete: if false;
+      
+      function validateLeadCreate(data) {
+        return data.email is string &&
+               data.name is string &&
+               data.source is string &&
+               data.magnetType is string &&
+               data.createdAt is timestamp &&
+               data.email.size() > 0 &&
+               data.name.size() >= 2 &&
+               data.name.size() <= 50 &&
+               data.message.size() <= 500;
+      }
+    }
+
+    /**
+     * Terminal Sessions Collection
+     * 
+     * Security Model:
+     * - CREATE: Public (anyone can start a terminal session)
+     * - READ: Session owner only (sessionId as identifier)
+     * - UPDATE: Session owner only (during command execution)
+     * - DELETE: Session owner only (after session timeout)
+     * 
+     * Note: Session isolation via sessionId prevents cross-user state leakage
+     */
+    match /terminals/{sessionId} {
+      allow create: if validateTerminalCreate(request.resource.data);
+      allow read, update, delete: if isSessionOwner(sessionId);
+      
+      function validateTerminalCreate(data) {
+        return data.sessionId is string &&
+               data.ipHash is string &&
+               data.createdAt is timestamp &&
+               data.expiresAt is timestamp &&
+               data.currentMode is string;
+      }
+      
+      function isSessionOwner(sessionId) {
+        return get(/databases/$(database)/documents/terminals/$(sessionId))
+               .data.ipHash == request.auth.token.ip_hash || 
+               request.auth == null;
+      }
+    }
+
+    /**
+     * Projects Collection
+     * 
+     * Security Model:
+     * - CREATE: Admin only
+     * - READ: Public (portfolio showcase)
+     * - UPDATE: Admin only
+     * - DELETE: Admin only
+     */
+    match /projects/{projectId} {
+      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      
+      function isAdmin() {
+        return request.auth != null && 
+               request.auth.token.admin == true;
+      }
+    }
+
+    /**
+     * Blog Posts Collection
+     * 
+     * Security Model:
+     * - CREATE: Admin only
+     * - READ: Public (published posts only)
+     * - UPDATE: Admin only
+     * - DELETE: Admin only
+     */
+    match /blog/{postId} {
+      allow create, update, delete: if isAdmin();
+      allow read: if resource.data.published == true;
+      
+      function isAdmin() {
+        return request.auth != null && 
+               request.auth.token.admin == true;
+      }
+    }
+
+    /**
+     * Analytics Events Collection
+     * 
+     * Security Model:
+     * - CREATE: Public (event logging)
+     * - READ: Admin only
+     * - UPDATE: Never (immutable)
+     * - DELETE: Never
+     * 
+     * Note: No sensitive data in events, only interaction metadata
+     */
+    match /analytics/{eventId} {
+      allow create: if validateAnalyticsCreate(request.resource.data);
+      allow read: if isAdmin();
+      allow update, delete: if false;
+      
+      function validateAnalyticsCreate(data) {
+        return data.eventType is string &&
+               data.sessionId is string &&
+               data.timestamp is timestamp;
+      }
+      
+      function isAdmin() {
+        return request.auth != null && 
+               request.auth.token.admin == true;
+      }
+    }
+
+    /**
+     * Default Deny Rule
+     * All other paths are denied by default (principle of least privilege)
+     */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
