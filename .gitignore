@@ -11,10 +11,13 @@ build/
 out/
 .turbo/
 
-# Environment
+# Environment - NEVER commit secret keys
 .env
 .env.local
+.env.production
 .env.production.local
+.env.development.local
+.env.test.local
 .env.*.local
 !.env.example
 
@@ -37,3 +40,6 @@ coverage/
 # Build tools
 .cache/
 .parcel-cache
+
+# OS
+Thumbs.db

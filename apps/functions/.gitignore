@@ -6,10 +6,13 @@ pnpm-lock.yaml
 lib/
 dist/
 
-# Environment
+# Environment - NEVER commit secret keys
 .env
 .env.local
+.env.production
 .env.production.local
+.env.development.local
+.env.test.local
 .env.*.local
 !.env.example
 
@@ -22,3 +25,9 @@ dist/
 .idea/
 *.swp
 .DS_Store
+
+# Testing
+coverage/
+
+# OS
+Thumbs.db

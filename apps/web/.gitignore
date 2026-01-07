@@ -4,10 +4,13 @@ node_modules/
 # Build
 dist/
 
-# Environment
+# Environment - NEVER commit secret keys
 .env
 .env.local
+.env.production
 .env.production.local
+.env.development.local
+.env.test.local
 .env.*.local
 !.env.example
 
@@ -19,3 +22,9 @@ dist/
 
 # Vite
 .vite/
+
+# Testing
+coverage/
+
+# OS
+Thumbs.db
