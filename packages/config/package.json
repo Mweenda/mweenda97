@@ -1,0 +1,12 @@
+{
+  "name": "@mweenda97/config",
+  "version": "1.0.0",
+  "description": "Shared ESLint, Prettier, and TypeScript configurations",
+  "private": true,
+  "main": "index.js",
+  "files": [
+    "eslint-preset.js",
+    "prettier-preset.js",
+    "tsconfig.json"
+  ]
+}

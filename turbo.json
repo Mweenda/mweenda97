@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env",
+    "**/.env.local"
+  ],
+  "tasks": {
+    "type-check": {
+      "outputs": [],
+      "cache": false
+    },
+    "lint": {
+      "outputs": [],
+      "cache": false,
+      "dependsOn": ["^build"]
+    },
+    "format": {
+      "outputs": [],
+      "cache": false
+    },
+    "build": {
+      "outputs": ["dist/**", ".next/**", "build/**", "lib/**"],
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "test:e2e": {
+      "outputs": [],
+      "cache": false,
+      "dependsOn": ["build"]
+    }
+  }
+}
