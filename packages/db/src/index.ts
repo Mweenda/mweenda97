@@ -1,27 +1,97 @@
 import { z } from 'zod';
 
 /**
- * Lead Magnet Schema
- * Captures recruiter/visitor data for lead generation
+ * Lead Capture Schema
+ * Sanitized and validated recruiter/visitor data with metadata
+ * Implements Confidentiality & Integrity principles
  */
-export const leadMagnetSchema = z.object({
-  id: z.string().optional(),
-  email: z.string().email('Invalid email address'),
-  linkedInUrl: z.string().url().optional(),
-  company: z.string().min(1, 'Company name required').optional(),
-  jobTitle: z.string().optional(),
-  message: z.string().max(500, 'Message must be under 500 characters').optional(),
+export const leadCaptureSchema = z.object({
+  email: z.string().email('Invalid email address').toLowerCase().trim(),
+  name: z.string().min(1, 'Name required').max(100).trim(),
+  company: z.string().min(1, 'Company required').max(150).trim().optional(),
+  jobTitle: z.string().max(100).trim().optional(),
+  linkedInUrl: z.string().url('Invalid LinkedIn URL').optional(),
+  message: z.string().max(500, 'Message must be under 500 characters').trim().optional(),
   magnetType: z.enum([
-    'network-security-audit',
-    'gemini-api-guide',
-    'technical-cv',
+    'network-security-audit-checklist',
+    'gemini-api-integration-guide',
+    'technical-cv-download',
   ]),
-  downloadedAt: z.date().default(() => new Date()),
+  source: z.enum(['hero-cta', 'project-card', 'ai-lab', 'terminal-sandbox']).default('hero-cta'),
+});
+
+export type LeadCapture = z.infer<typeof leadCaptureSchema>;
+
+/**
+ * Lead Document Schema
+ * Stored in Firestore with metadata for tracking and analytics
+ */
+export const leadDocumentSchema = z.object({
+  id: z.string().optional(),
+  email: z.string().email(),
+  name: z.string(),
+  company: z.string().optional(),
+  jobTitle: z.string().optional(),
+  linkedInUrl: z.string().url().optional(),
+  message: z.string().optional(),
+  magnetType: z.string(),
+  source: z.string(),
+  ipHash: z.string().optional(), // Hash of IP (privacy-first)
+  userAgent: z.string().optional(), // Device/browser info
+  pdfDownloadedAt: z.date().optional(), // Timestamp when PDF was actually downloaded
   createdAt: z.date().default(() => new Date()),
   updatedAt: z.date().default(() => new Date()),
 });
 
-export type LeadMagnet = z.infer<typeof leadMagnetSchema>;
+export type LeadDocument = z.infer<typeof leadDocumentSchema>;
+
+/**
+ * Terminal Session Schema
+ * Maintains per-user isolated terminal state
+ * Ensures User Isolation: one user's commands don't affect another
+ */
+export const terminalSessionSchema = z.object({
+  sessionId: z.string(),
+  userId: z.string().optional(), // Anonymous if not authenticated
+  ipHash: z.string(), // Privacy-first IP identification
+  // Virtual network device state
+  currentInterface: z.string().default('eth0'),
+  currentMode: z.enum(['user', 'enable', 'config', 'interface']).default('user'),
+  configBuffer: z.record(z.any()).default({}), // Staged configuration
+  runningConfig: z.record(z.any()).default({}), // Applied configuration
+  commandHistory: z.array(z.string()).default([]),
+  // Metadata
+  createdAt: z.date().default(() => new Date()),
+  lastActivityAt: z.date().default(() => new Date()),
+  expiresAt: z.date(), // Session timeout
+});
+
+export type TerminalSession = z.infer<typeof terminalSessionSchema>;
+
+/**
+ * Terminal Command Schema
+ * Validates and executes CCNA commands (show, configure, etc.)
+ */
+export const terminalCommandSchema = z.object({
+  sessionId: z.string(),
+  command: z.string().min(1).max(500),
+  // Whitelist of allowed CCNA commands
+  type: z.enum([
+    'show-version',
+    'show-interfaces',
+    'show-ip-route',
+    'show-cdp-neighbors',
+    'config-hostname',
+    'config-interface-ip',
+    'config-static-route',
+    'enable',
+    'disable',
+    'exit',
+    'help',
+  ]),
+});
+
+export type TerminalCommand = z.infer<typeof terminalCommandSchema>;
 
 /**
  * Project Metadata Schema
