@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@mweenda97/ui';
 import { Mail, MessageCircle, Github, ArrowRight, CheckCircle } from 'lucide-react';
+import profileImage from './assets/christopher.jpg';
 
 const CONTACT_EMAIL = 'mweenda97@gmail.com';
 const WHATSAPP_URL = `https://wa.me/260768829959?text=Hi%20Mweenda%2C%20I%20would%20like%20to%20discuss%20a%20project.`;
@@ -105,33 +106,64 @@ export default function App(): JSX.Element {
 
       {activeSection === 'about' && (
         <section className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4 py-20">
-          <div className="max-w-4xl space-y-12 w-full">
+          <div className="max-w-6xl w-full space-y-12">
             <h2 className="text-5xl font-bold">About Me</h2>
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-2xl font-semibold text-blue-400 mb-3">Who I Am</h3>
-                <p className="text-slate-300 leading-relaxed">I&apos;m Mweenda Lubi, a self-motivated full-stack developer passionate about creating elegant solutions to complex problems. With a strong foundation in computer science and hands-on experience in modern web technologies, I&apos;m dedicated to continuous learning and delivering exceptional results.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+              {/* Left Column - Content */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-semibold text-blue-400 mb-3">Who I Am</h3>
+                  <p className="text-slate-300 leading-relaxed">I&apos;m Mweenda Lubi, a self-motivated full-stack developer passionate about creating elegant solutions to complex problems. With a strong foundation in computer science and hands-on experience in modern web technologies, I&apos;m dedicated to continuous learning and delivering exceptional results.</p>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-purple-400 mb-3">What I Do</h3>
+                  <p className="text-slate-300 leading-relaxed">I specialize in building full-stack web applications, from intuitive user interfaces to robust backend systems. My expertise includes React, Node.js, TypeScript, Firebase, and modern DevOps practices. I&apos;m also passionate about AI integration and creating solutions that scale.</p>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-pink-400 mb-3">What I&apos;m Passionate About</h3>
+                  <ul className="space-y-2 text-slate-300">
+                    <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Building user-centric applications that solve real problems</span></li>
+                    <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Writing clean, maintainable, type-safe code</span></li>
+                    <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Exploring AI and machine learning applications</span></li>
+                    <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Mentoring junior developers and sharing knowledge</span></li>
+                    <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Contributing to open-source projects</span></li>
+                  </ul>
+                </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-purple-400 mb-3">What I Do</h3>
-                <p className="text-slate-300 leading-relaxed">I specialize in building full-stack web applications, from intuitive user interfaces to robust backend systems. My expertise includes React, Node.js, TypeScript, Firebase, and modern DevOps practices. I&apos;m also passionate about AI integration and creating solutions that scale.</p>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-pink-400 mb-3">What I&apos;m Passionate About</h3>
-                <ul className="space-y-2 text-slate-300">
-                  <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Building user-centric applications that solve real problems</span></li>
-                  <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Writing clean, maintainable, type-safe code</span></li>
-                  <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Exploring AI and machine learning applications</span></li>
-                  <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Mentoring junior developers and sharing knowledge</span></li>
-                  <li className="flex gap-3"><CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" /><span>Contributing to open-source projects</span></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-indigo-400 mb-3">What I Offer</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {['Full-Stack Development', 'API Design & Implementation', 'Database Architecture', 'UI/UX Development', 'Code Reviews & Optimization', 'Technical Consulting'].map((skill, idx) => (
-                    <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded p-4"><p className="text-slate-300">{skill}</p></div>
-                  ))}
+
+              {/* Right Column - Image and Skills */}
+              <div className="flex flex-col items-center gap-8 sticky top-24">
+                {/* Profile Image Container with Proper Stacking Context */}
+                <div className="w-full flex justify-center">
+                  <div className="relative z-0 w-full max-w-xs">
+                    {/* Gradient Background Glow - Sits Behind */}
+                    <div className="absolute -inset-4 z-[-1] bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl blur-3xl opacity-30"></div>
+                    
+                    {/* Image - Sits in Front */}
+                    <img 
+                      src={profileImage}
+                      alt="Christopher Kawanga - Full Stack Developer" 
+                      loading="lazy"
+                      className="relative z-10 w-full h-auto rounded-2xl border-2 border-slate-600 shadow-2xl hover:shadow-purple-500/50 hover:border-purple-500/50 transition-all duration-300"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.src = 'https://ui-avatars.com/api/?name=Christopher+Kawanga&background=0D8ABC&color=fff&size=400';
+                        console.error('Profile image failed to load. Using fallback avatar.');
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Skills Grid */}
+                <div className="w-full">
+                  <h3 className="text-xl font-semibold text-indigo-400 mb-4">What I Offer</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {['Full-Stack Dev', 'API Design', 'Databases', 'UI/UX', 'Code Reviews', 'Consulting'].map((skill, idx) => (
+                      <div key={idx} className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 hover:border-blue-500/50 hover:bg-slate-700/30 transition-all duration-200 text-center">
+                        <p className="text-slate-300 text-sm font-medium">{skill}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
