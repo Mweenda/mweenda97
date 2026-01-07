@@ -1,18 +1,31 @@
 import { useState } from 'react';
 import { Button, Terminal, LeadCapture } from '@mweenda97/ui';
+import { useTerminal } from './hooks';
 
 export default function App(): JSX.Element {
   const [activeTab, setActiveTab] = useState<'hero' | 'terminal' | 'lead'>('hero');
   const [sessionId, setSessionId] = useState<string>('');
 
-  const initTerminal = async (): Promise<void> => {
-    // TODO: Call tRPC mutation: terminal.initSession
-    // const response = await trpc.terminal.initSession.mutate({ ipHash: '...' });
-    // setSessionId(response.sessionId);
+  const { initSession: initTerminalSession, executeCommand } = useTerminal();
 
-    // Simulate for now
-    setSessionId('term_' + Date.now());
-    setActiveTab('terminal');
+  const initTerminal = async (): Promise<void> => {
+    try {
+      const response = await initTerminalSession();
+      setSessionId(response.sessionId);
+      setActiveTab('terminal');
+    } catch (error) {
+      console.error('Failed to initialize terminal:', error);
+    }
+  };
+
+  const handleTerminalCommand = async (command: string): Promise<void> => {
+    if (!sessionId) return;
+
+    try {
+      await executeCommand(sessionId, command, 'user');
+    } catch (error) {
+      console.error('Terminal command error:', error);
+    }
   };
 
   return (
@@ -115,6 +128,7 @@ export default function App(): JSX.Element {
             {sessionId && (
               <Terminal
                 sessionId={sessionId}
+                onCommand={handleTerminalCommand}
                 className="w-full"
               />
             )}
